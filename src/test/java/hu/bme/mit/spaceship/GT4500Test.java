@@ -153,4 +153,42 @@ public class GT4500Test {
     verify(this.mockedSecondaryStore,times(0)).fire(1);
   }
 
+  @Test
+  public void fire_Torpedos_In_SingleFiring_Mode_With_Primary_Store_Empty(){
+    //Arrange
+    when(mockedPrimaryStore.isEmpty()).thenReturn(true);
+    when(mockedSecondaryStore.isEmpty()).thenReturn(false);
+    when(mockedPrimaryStore.fire(1)).thenReturn(false);
+    when(mockedSecondaryStore.fire(1)).thenReturn(true);
+    //Act
+    boolean result = ship.fireTorpedo(FiringMode.SINGLE);
+    //Assert
+
+    assertEquals(true, result);
+    verify(this.mockedPrimaryStore,times(0)).fire(1);
+    verify(this.mockedSecondaryStore,times(1)).fire(1);
+  }
+
+  @Test
+  public void fire_Torpedos_In_SingleFiring_Mode_With_Secondary_Store_Empty_And_Primary_Store_Has_Only_One_Torpedo(){
+ 
+    //Arrange
+    when(mockedPrimaryStore.isEmpty()).thenReturn(false);
+    when(mockedSecondaryStore.isEmpty()).thenReturn(true);
+    when(mockedPrimaryStore.fire(1)).thenReturn(true);
+    when(mockedSecondaryStore.fire(1)).thenReturn(false);
+    //Act
+    boolean firstResult = ship.fireTorpedo(FiringMode.SINGLE);
+    
+    when(mockedPrimaryStore.isEmpty()).thenReturn(true);
+    when(mockedPrimaryStore.fire(1)).thenReturn(false);
+
+    boolean secondResult = ship.fireTorpedo(FiringMode.SINGLE);
+    //Assert
+
+    assertEquals(true, firstResult);
+    assertEquals(false, secondResult);
+    verify(this.mockedPrimaryStore,times(1)).fire(1);
+    verify(this.mockedSecondaryStore,times(0)).fire(1);
+  }
 }
